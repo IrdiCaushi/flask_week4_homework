@@ -10,9 +10,6 @@ app = Flask(__name__)
 def home():
     return render_template("home.html")
 
-@app.route('/course')
-def pages():
-    return render_template('course.html')
     
 
 app.register_blueprint(student_bluep, url_prefix='/v1/student')

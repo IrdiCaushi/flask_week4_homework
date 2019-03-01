@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template
+from flask_restful import Resource
 from flask import jsonify
 
 event_list = [
@@ -7,13 +7,11 @@ event_list = [
     {"id": 3, "event": "Final"}
 ]
 
-event_bluep = Blueprint('event_bluep', __name__, template_folder='templates')
-
+class Event_one(Resource):
     
-# The POST and PUT method implementation  ---CrUd (Create of CRUD)
-@event_bluep.route("/<int:event_id>/<event>", methods=['POST', 'PUT'])                              
-def event_put_post(event_id, event):
-    if request.method == 'POST':
+    
+    # The POST method implementation  ---Crud (Create of CRUD)               
+    def post(self, event_id, event):
         id_exist = False
         for i in range(len(event_list)):
             if event_list[i-1]['id'] == event_id:
@@ -25,7 +23,9 @@ def event_put_post(event_id, event):
         else:
             return "ID already exist"
 
-    else:
+    # The PUT method implementation ---crUd (Update of CRUD)
+    def put(self, event_id, event):
+
         for a in event_list:
             if a["id"] == event_id:
                 a.update({'event': event})
@@ -35,11 +35,10 @@ def event_put_post(event_id, event):
         return jsonify(event_list)
 
     
+class Event_two(Resource):
     
-# The GET and DELETE method implementation  ---cRuD (Retrieve of CRUD)
-@event_bluep.route("/<int:event_id>", methods=['GET', 'DELETE'])
-def event_delete_get(event_id):
-    if request.method == 'GET':
+    # The GET method implementation  ---cRud (Retrieve of CRUD)
+    def get(self, event_id):
         flag = False
         for event in event_list:
             if event["id"] == event_id:
@@ -48,8 +47,8 @@ def event_delete_get(event_id):
         if flag == False:    
             return "ID not Found!"
 
-
-    else:
+    # The DELETE method implementation ---cruD (Delete of CRUD)
+    def delete(self, event_id):
         flag = False
         for i in range(len(event_list)): 
             if event_list[i]['id'] == event_id: 
@@ -60,7 +59,7 @@ def event_delete_get(event_id):
         if flag == False:
             return "ID not Found!"
     
-#The GET ALL method
-@event_bluep.route("/all", methods=['GET'])
-def get_all():
-    return render_template('event.html', events=event_list)
+
+class All_events(Resource):
+    def get(self):
+        return jsonify(event_list)

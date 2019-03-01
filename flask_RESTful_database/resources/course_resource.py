@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template
+from flask_restful import Resource
 from flask import jsonify
 
 course_list = [
@@ -7,13 +7,12 @@ course_list = [
     {"id": 3, "name": "COS220b"}
 ]
 
-course_bluep = Blueprint('course_bluep', __name__, template_folder='templates')
+class Course_one(Resource):
     
 
-# The POST and PUT method implementation  ---CrUd (Create of CRUD)           
-@course_bluep.route("/<int:course_id>/<name>", methods=['POST', 'PUT'])               
-def course_put_post(course_id,name):
-    if request.method == 'POST':
+    # The POST method implementation  ---Crud (Create of CRUD)           
+    def post(self,course_id,name):
+
         id_exist = False
         for i in range(len(course_list)):
             if course_list[i-1]['id'] == course_id:
@@ -25,7 +24,9 @@ def course_put_post(course_id,name):
         else:
             return "ID already exist"
 
-    else:
+    # The PUT method implementation ---crUd (Update of CRUD)
+    def put(self,course_id,name):
+
         for a in course_list:
             if a["id"] == course_id:
                 a.update({'name': name})
@@ -35,10 +36,10 @@ def course_put_post(course_id,name):
         return jsonify(course_list)
     
 
-# The GET and DELETE method implementation  ---cRuD (Retrieve of CRUD)
-@course_bluep.route("/<int:course_id>", methods=['GET', 'DELETE'])                              
-def course_delete_get(course_id):
-    if request.method == 'GET':
+class Course_two(Resource):
+
+     # The GET method implementation  ---cRud (Retrieve of CRUD)
+    def get(self, course_id):
         flag = False
         for course in course_list:
             if course["id"] == course_id:
@@ -48,7 +49,8 @@ def course_delete_get(course_id):
             return "ID not Found!"
 
 
-    else:
+    # The DELETE method implementation ---cruD (Delete of CRUD)        
+    def delete(self, course_id):
         flag = False
         for i in range(len(course_list)): 
             if course_list[i]['id'] == course_id: 
@@ -60,8 +62,6 @@ def course_delete_get(course_id):
             return "ID not Found!"
 
 
-
-#The GET ALL method
-@course_bluep.route("/all", methods=['GET'])
-def get_all():
-    return render_template('course.html', courses=course_list)
+class All_courses(Resource):
+    def get(self):
+        return jsonify(course_list)

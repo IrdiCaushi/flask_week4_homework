@@ -1,29 +1,29 @@
-from flask import Blueprint, request, render_template
+from flask_restful import Resource
 from flask import jsonify
 
 students_list = [
     {"id": 1, "name": "Irdi Caushaj"},
     {"id": 2, "name": "Orges Mihaj"},
     {"id": 3, "name": "Besar Limani"}
-]    
+]
 
-student_bluep = Blueprint('student_bluep', __name__, template_folder='templates')
+class Student_one(Resource):
     
-# The POST and PUT method implementation  ---CrUd (Create of CRUD)
-@student_bluep.route("/<int:student_id>/<name>", methods=['POST', 'PUT'])               
-def student_put_post(student_id,name):
-    id_exist = False
-    if request.method == 'POST':
+    
+    # The POST method implementation  ---Crud (Create of CRUD)               
+    def post(self,student_id,name):
         for i in range(len(students_list)):
             if students_list[i-1]['id'] == student_id:
                 id_exist = True
-                
+        
         if id_exist == False:
             students_list.append(dict({'id': student_id, 'name': name}))
             return jsonify(students_list)
         else:
             return "ID already exist"
-    else:             
+
+    # The PUT method implementation ---crUd (Update of CRUD)
+    def put(self,student_id,name):
         for a in students_list:
             if a["id"] == student_id:
                 a.update({'name': name})
@@ -33,12 +33,10 @@ def student_put_post(student_id,name):
         return jsonify(students_list)
 
 
+class Student_two(Resource):
 
-#The GET and DELETE method implementation  ---cRuD (Retrieve of CRUD)
-@student_bluep.route("/<int:student_id>", methods=['GET', 'DELETE'])
-def student_get_delete(student_id):
-    if request.method == 'GET':               
-       
+    #The GET method implementation  ---cRud (Retrieve of CRUD)
+    def get(self, student_id):
         flag = False
         for student in students_list:
             if student["id"] == student_id:
@@ -46,8 +44,10 @@ def student_get_delete(student_id):
                 return jsonify(student)
         if flag == False:    
             return "ID not Found!"
-    else:
-        
+
+
+    # The DELETE method implementation ---cruD (Delete of CRUD)
+    def delete(self, student_id):
         flag = False
         for i in range(len(students_list)): 
             if students_list[i]['id'] == student_id: 
@@ -59,7 +59,6 @@ def student_get_delete(student_id):
             return "ID not Found!"
 
 
-# The GET ALL method
-@student_bluep.route("/all", methods=['GET'])
-def get_all():
-    return render_template('student.html', students=students_list)
+class All_students(Resource):
+    def get(self):
+        return jsonify(students_list)
